@@ -301,6 +301,9 @@ let open = Date.now() < CLOSE;                // the Worker also says so, and re
 let RECENT = null;                            // the five latest votes, [name, id], once loaded
 
 // This browser's vote and its random voter ID are kept on this device only (localStorage).
+// All votes were deleted on 27 Sep 2026 so the poll could start fresh. The vote is saved under a new name
+// since then, so a browser that voted before that forgets its old vote.
+const VOTE_KEY = "econnobel-vote-2";
 const store = {
   get(key){ try { return localStorage.getItem(key); } catch { return null; } },
   set(key, value){ try { localStorage.setItem(key, value); } catch {} },
@@ -333,7 +336,7 @@ let selected = null, myVote = null, myName = "", justVoted = false, showAll = fa
 let busy = false, problem = "";   // saving a vote right now; the last error message
 let needsTick = false;            // the bot check is showing its "Verify you are human" box
 try {                             // a vote made earlier on this device
-  const saved = JSON.parse(store.get("econnobel-vote") || "null");
+  const saved = JSON.parse(store.get(VOTE_KEY) || "null");
   if (saved && byId[saved.pick] && !byId[saved.pick].out) { myVote = saved.pick; myName = saved.name || ""; }
 } catch {}
 const eligible = () => people.filter(p => !p.out);
@@ -541,7 +544,7 @@ $("#form").addEventListener("submit", async e => {
     });
     const data = await answer.json().catch(() => ({}));
     if (!answer.ok) throw new Error(data.error || "Your vote wasn't saved. Try again.");
-    myVote = pick; myName = name || "Anonymous"; store.set("econnobel-vote", JSON.stringify({ pick, name: myName }));
+    myVote = pick; myName = name || "Anonymous"; store.set(VOTE_KEY, JSON.stringify({ pick, name: myName }));
     selected = null; justVoted = true; sheetOpen = true; $("#q").value = ""; lastResults = "";
     apply(data);
   } catch (err) {
