@@ -315,6 +315,7 @@ function match(Q, p){ // Q is normalized; 0 whole word, 1 word start, 2 anywhere
 /* ---------- state & rendering ---------- */
 let selected = null, myVote = null, myName = "", justVoted = false, showAll = false, sheetOpen = false;
 let busy = false, problem = "";   // saving a vote right now; the last error message
+let needsTick = false;            // the bot check is showing its "Verify you are human" box
 try {                             // a vote made earlier on this device
   const saved = JSON.parse(store.get("econnobel-vote") || "null");
   if (saved && byId[saved.pick] && !byId[saved.pick].out) { myVote = saved.pick; myName = saved.name || ""; }
@@ -414,7 +415,8 @@ function renderPanel(){
   }
   $("#form").hidden = mine || !open;
   const go = $("#go"); go.disabled = !p || mine || busy; go.classList.toggle("busy", busy);
-  go.textContent = busy ? "Saving your vote…" : !p ? "Vote" : switching ? `Switch my vote to ${surname(p.name)}` : `Vote for ${surname(p.name)}`;
+  go.textContent = busy ? (needsTick ? "Tick the box below to finish voting" : "Saving your vote…")
+    : !p ? "Vote" : switching ? `Switch my vote to ${surname(p.name)}` : `Vote for ${surname(p.name)}`;
   $("#shares").hidden = !mine; if (mine) setShareLinks();
   const keep = $("#keep"); keep.hidden = !switching || busy;
   if (switching) keep.textContent = `Keep my vote for ${surname(byId[myVote].name)}`;
@@ -488,6 +490,9 @@ async function humanToken(){
       sitekey: TURNSTILE_KEY, execution: "execute", appearance: "interaction-only",
       callback: token => waiting && waiting.resolve(token),
       "error-callback": () => { if (waiting) waiting.reject(new Error("We couldn't confirm you're not a bot. Try again.")); return true; },
+      // Most people never see the check. If Cloudflare isn't sure, it shows a box to tick: say so on the button.
+      "before-interactive-callback": () => { needsTick = true; renderPanel(); },
+      "after-interactive-callback": () => { needsTick = false; renderPanel(); },
     });
     else turnstile.reset(widget);
     turnstile.execute(widget);
@@ -526,7 +531,7 @@ $("#form").addEventListener("submit", async e => {
   } catch (err) {
     problem = err instanceof TypeError ? "Couldn't reach the vote counter. Check your connection and try again." : err.message;
   }
-  busy = false; renderPanel();
+  busy = false; needsTick = false; renderPanel();
 });
 
 /* ---------- sharing: plain links, so no LinkedIn scripts ever load on the page ---------- */
