@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EconNobel | Farhad Panahov</title>
 <meta name="description" content="Who wins the 2026 Nobel Prize in Economics? A public poll: pick the economist you think will win.">
+<link rel="canonical" href="https://panahovf.github.io/econnobel/">
+<!-- The preview card when the link is shared (LinkedIn, messages...) -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://panahovf.github.io/econnobel/">
+<meta property="og:title" content="Who wins the 2026 Nobel Prize in Economics?">
+<meta property="og:description" content="A public poll. Pick the economist you think will win; the winner is announced Monday 12 October.">
+<meta property="og:image" content="https://panahovf.github.io/econnobel/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -15,7 +25,8 @@
 <style>
   /* ---------- EconNobel: only what the portfolio stylesheet doesn't cover ---------- */
   :root{--accent-dk:#1a3aa8;   /* a darker shade of the portfolio's blue, for button hovers */
-        --line-dk:#cdc8bf}     /* a slightly darker hairline: empty radio circles, the "Profile" underline */
+        --line-dk:#cdc8bf;     /* a slightly darker hairline: empty radio circles, the "Profile" underline */
+        --err:#b42318}         /* error messages */
   [hidden]{display:none!important}
   button,input{font:inherit;color:inherit}
   .num{font-variant-numeric:tabular-nums}
@@ -102,6 +113,9 @@
   .go{width:100%;height:50px;margin-top:14px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:500;font-size:.92rem;cursor:pointer;transition:background .16s}
   .go:hover:not(:disabled){background:var(--accent-dk)}
   .go:disabled{background:var(--wash);color:var(--faint);cursor:not-allowed}
+  .go.busy:disabled{background:var(--accent);color:#fff;opacity:.75;cursor:progress}
+  .ts{display:flex;justify-content:center}
+  .ts:not(:empty){margin-top:12px}
   .shares{margin-top:20px}
   .shl{margin:0 0 10px;font-size:.84rem;font-weight:600;color:var(--ink)}
   .sh{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;border:1px solid var(--line);background:var(--white);border-radius:999px;padding:0 12px;font-size:.85rem;font-weight:500;color:var(--ink);cursor:pointer;white-space:nowrap;transition:border-color .16s,color .16s,background .16s}
@@ -114,6 +128,8 @@
   .shrow .sh{flex:1}
   .keep{display:block;margin:14px auto 0}
   .hint{margin:12px 0 0;font-size:.76rem;color:var(--muted);text-align:center}
+  .hint.err{color:var(--err)}
+  .footer .fine a{color:inherit;text-decoration:underline;text-underline-offset:2px}
   .close{display:none}
 
   .recent{margin-top:34px}
@@ -199,6 +215,7 @@
           <label class="lbl" for="name">Your name <em>(optional, shown publicly)</em></label>
           <input class="inp" id="name" maxlength="40" autocomplete="off" placeholder="Anonymous">
           <button class="go" id="go" type="submit" disabled>Vote</button>
+          <div class="ts" id="ts"></div>
         </form>
         <div class="shares" id="shares" hidden>
           <p class="shl">Share your pick</p>
@@ -230,8 +247,8 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p class="fine">&copy; 2026 Farhad Panahov. Views expressed here are my own. EconNobel is an independent poll, not affiliated with the Nobel Foundation.</p>
-      <nav><a href="https://panahovf.github.io/index.html">Home</a><a href="https://panahovf.github.io/research.html">Research</a><a href="https://panahovf.github.io/cv.html">CV</a></nav>
+      <p class="fine">&copy; 2026 Farhad Panahov. Views expressed here are my own. EconNobel is an independent poll, not affiliated with the Nobel Foundation. The list of economists comes from <a href="https://ideas.repec.org/top/" target="_blank" rel="noopener noreferrer">RePEc/IDEAS rankings</a>.</p>
+      <nav><a href="https://panahovf.github.io/index.html">Home</a><a href="https://panahovf.github.io/research.html">Research</a><a href="https://panahovf.github.io/cv.html">CV</a><a href="https://panahovf.github.io/econnobel/" aria-current="page">EconNobel</a></nav>
     </div>
   </div>
 </footer>
@@ -240,7 +257,7 @@
 <script>
 /* EconNobel poll page.
    The list of people comes from candidates.js (made by data/05_combine.ipynb).
-   Votes are placeholders until the vote counter (Cloudflare) is connected. */
+   Votes go to the vote counter, a Cloudflare Worker (worker/ in the repository). */
 
 /* ---------- people ---------- */
 // Each row of window.CANDIDATES: [id, name, institution, homepage, RePEc profile, status, year won, Kalshi %, best RePEc rank]
@@ -260,13 +277,18 @@ function safeUrl(u){
   try { const x = new URL(u); return x.protocol === "http:" || x.protocol === "https:" ? x.href : ""; } catch { return ""; }
 }
 
-/* ---------- placeholder votes, until the vote counter is connected ----------
-   #launch in the address shows the page as it will look before anyone votes. */
-const opts = decodeURIComponent(location.hash.slice(1)).split("&");
-const launch = opts.includes("launch");
-const PLACEHOLDER_VOTES = { "pat6": 34, "partha-dasgupta": 29, "pbl81": 22, "pwo3": 15, "psh93": 9 };
-if (!launch) for (const [id, v] of Object.entries(PLACEHOLDER_VOTES)) if (byId[id]) byId[id].votes = v;
-const RECENT = launch ? [] : [["Amara O.", "partha-dasgupta"], ["Jonas", "pwo3"], ["Anonymous", "pat6"], ["Priya S.", "pbl81"], ["Mateo R.", "psh93"]];
+/* ---------- the vote counter ---------- */
+const API = "https://econnobel.WORKERS-SUBDOMAIN.workers.dev";   // the Worker's address
+const TURNSTILE_KEY = "TURNSTILE-SITE-KEY";                      // public key for Cloudflare's bot check
+const CLOSE = Date.UTC(2026, 9, 12, 9, 45);   // voting closes 12 Oct 2026, 5:45 a.m. Eastern (EDT) = 9:45 UTC
+let open = Date.now() < CLOSE;                // the Worker also says so, and refuses late votes
+let RECENT = null;                            // the five latest votes, [name, id], once loaded
+
+// This browser's vote and its random voter ID are kept on this device only (localStorage).
+const store = {
+  get(key){ try { return localStorage.getItem(key); } catch { return null; } },
+  set(key, value){ try { localStorage.setItem(key, value); } catch {} },
+};
 
 /* ---------- typo-tolerant search ---------- */
 function osa(a, b){
@@ -292,6 +314,11 @@ function match(Q, p){ // Q is normalized; 0 whole word, 1 word start, 2 anywhere
 
 /* ---------- state & rendering ---------- */
 let selected = null, myVote = null, myName = "", justVoted = false, showAll = false, sheetOpen = false;
+let busy = false, problem = "";   // saving a vote right now; the last error message
+try {                             // a vote made earlier on this device
+  const saved = JSON.parse(store.get("econnobel-vote") || "null");
+  if (saved && byId[saved.pick] && !byId[saved.pick].out) { myVote = saved.pick; myName = saved.name || ""; }
+} catch {}
 const eligible = () => people.filter(p => !p.out);
 const total = () => eligible().reduce((s, p) => s + p.votes, 0);
 const pct = p => (p.votes / total() * 100).toFixed(1) + "%";
@@ -365,22 +392,18 @@ function renderList(){
   $("#note").hidden = !note; $("#note").textContent = note;   // query text → textContent only
   $("#more").hidden = searching || order.length <= 10; $("#clear").hidden = !q;
   const nm = $("#nomatch"); nm.hidden = !(searching && !list.length);
-  if (!nm.hidden) {
-    const b = el("button", "link", "Suggest a name"); b.type = "button";
-    b.addEventListener("click", () => nm.replaceChildren("Thanks. We add real contenders to the list."));
-    nm.replaceChildren(`No one called “${q}” on the list. `, b);
-  }
+  if (!nm.hidden) nm.textContent = `No one called “${q}” on the list.`;
 }
 
 /* ---------- vote panel: empty · picked · your vote · switching ---------- */
 function renderPanel(){
   const id = selected || myVote, p = byId[id];
   const mine = !!p && id === myVote, switching = !!myVote && !!selected && selected !== myVote;
-  $("#ptitle").textContent = mine && justVoted ? "Vote recorded" : "Your vote";
+  $("#ptitle").textContent = !open ? "Voting has closed" : mine && justVoted ? "Vote recorded" : "Your vote";
   const cur = $("#current"); cur.hidden = !switching;
   if (switching) { const i = el("i"); i.innerHTML = CHECK_S; const t = el("span"); t.append("Current vote: ", el("b", "", byId[myVote].name)); cur.replaceChildren(i, t); }
   const box = $("#pick"); box.className = "pick" + (p ? " has" : "") + (mine ? " own" : "");
-  if (!p) box.replaceChildren("Pick a name from the list.");
+  if (!p) box.replaceChildren(open ? "Pick a name from the list." : "Thanks to everyone who voted.");
   else {
     const who = el("div", "who");
     who.append(el("span", "nm", p.name));
@@ -389,18 +412,23 @@ function renderPanel(){
     if (mine) { const ck = el("i", "ck"); ck.innerHTML = CHECK; kids.unshift(ck); }
     box.replaceChildren(...kids);
   }
-  $("#form").hidden = mine;
-  const go = $("#go"); go.disabled = !p || mine;
-  go.textContent = !p ? "Vote" : switching ? `Switch my vote to ${surname(p.name)}` : `Vote for ${surname(p.name)}`;
+  $("#form").hidden = mine || !open;
+  const go = $("#go"); go.disabled = !p || mine || busy; go.classList.toggle("busy", busy);
+  go.textContent = busy ? "Saving your vote…" : !p ? "Vote" : switching ? `Switch my vote to ${surname(p.name)}` : `Vote for ${surname(p.name)}`;
   $("#shares").hidden = !mine; if (mine) setShareLinks();
-  const keep = $("#keep"); keep.hidden = !switching;
+  const keep = $("#keep"); keep.hidden = !switching || busy;
   if (switching) keep.textContent = `Keep my vote for ${surname(byId[myVote].name)}`;
-  $("#hint").textContent = mine ? "To change it, just pick another name." : "One vote per browser. Change it until 12 Oct.";
+  const hint = $("#hint"); hint.classList.toggle("err", !!problem);
+  hint.textContent = problem || (!open ? "Voting closed on 12 October at 5:45 a.m. ET."
+    : mine ? "To change it, just pick another name." : "One vote per browser. Change it until 12 Oct.");
   $("#side").classList.toggle("open", sheetOpen);
   document.body.classList.toggle("sheet", sheetOpen);
 }
 function select(id){
-  selected = id && id !== myVote ? id : null; justVoted = false; sheetOpen = !!id;
+  if (busy) return;                  // a vote is being saved
+  if (!open) id = null;              // voting has closed
+  if (id) loadTurnstile().catch(() => {});   // get the bot check ready while they decide (errors show on voting)
+  selected = id && id !== myVote ? id : null; justVoted = false; sheetOpen = !!id; problem = "";
   if (selected && myVote && !$("#name").value && myName !== "Anonymous") $("#name").value = myName;
   const on = selected || myVote;
   document.querySelectorAll(".cand").forEach(r => {
@@ -412,10 +440,58 @@ function select(id){
 }
 
 function renderRecent(){
-  const items = () => RECENT.length
+  const items = () => RECENT === null ? []                 // not loaded yet
+    : RECENT.length
     ? RECENT.slice(0, 5).map(([n, id]) => { const li = el("li"); li.append(el("b", "", n), " picked " + surname(byId[id].name)); return li; }) // names → textContent only
     : [el("li", "", "No votes yet.")];
   $("#recentD").replaceChildren(...items()); $("#recentM").replaceChildren(...items());
+}
+
+/* ---------- live results from the vote counter ---------- */
+let lastResults = "";
+function apply(data){
+  const same = JSON.stringify([data.totals, data.recent, data.open]) === lastResults;
+  lastResults = JSON.stringify([data.totals, data.recent, data.open]);
+  if (data.open === false && open) { open = false; selected = null; sheetOpen = false; }
+  if (same) return;                                          // nothing changed: leave the page alone
+  for (const p of people) p.votes = (data.totals && data.totals[p.id]) || 0;
+  RECENT = (data.recent || []).filter(([, id]) => byId[id]);
+  renderList(); renderRecent(); renderPanel();
+}
+async function refresh(){
+  try {
+    const answer = await fetch(API + "/results", { cache: "no-store" });
+    if (answer.ok) apply(await answer.json());
+  } catch {}                                                 // offline for a moment: try again next time
+}
+
+/* ---------- Turnstile: Cloudflare's check that a person, not a script, is voting ----------
+   Its script only loads once someone picks a name, so just visiting the page doesn't load it. */
+let turnstileReady = null, widget = null, waiting = null;
+function loadTurnstile(){
+  if (!turnstileReady) turnstileReady = new Promise((resolve, reject) => {
+    window.onTurnstileLoad = resolve;
+    const s = document.createElement("script");
+    s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad";
+    s.async = true;
+    s.onerror = () => { turnstileReady = null; reject(new Error("The bot check didn't load. Check your connection and try again.")); };
+    document.head.append(s);
+  });
+  return turnstileReady;
+}
+async function humanToken(){
+  await loadTurnstile();
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("The bot check took too long. Try again.")), 120000);
+    waiting = { resolve: token => { clearTimeout(timer); resolve(token); }, reject: err => { clearTimeout(timer); reject(err); } };
+    if (widget === null) widget = turnstile.render("#ts", {
+      sitekey: TURNSTILE_KEY, execution: "execute", appearance: "interaction-only",
+      callback: token => waiting && waiting.resolve(token),
+      "error-callback": () => { if (waiting) waiting.reject(new Error("We couldn't confirm you're not a bot. Try again.")); return true; },
+    });
+    else turnstile.reset(widget);
+    turnstile.execute(widget);
+  });
 }
 
 /* ---------- events ---------- */
@@ -430,14 +506,27 @@ $("#clear").addEventListener("click", () => { $("#q").value = ""; renderList(); 
 $("#more").addEventListener("click", () => { showAll = !showAll; renderList(); });
 $("#close").addEventListener("click", () => select(null));   // phones: closing the sheet also un-picks
 $("#keep").addEventListener("click", () => select(myVote));
-$("#form").addEventListener("submit", e => {
-  e.preventDefault(); if (!selected) return;
-  const name = $("#name").value.trim().replace(/\s+/g, " ").slice(0, 40) || "Anonymous";
-  if (myVote) { byId[myVote].votes--; const i = RECENT.findIndex(x => x.me); if (i > -1) RECENT.splice(i, 1); }
-  myVote = selected; myName = name; byId[myVote].votes++;
-  const mine = [name, myVote]; mine.me = true; RECENT.unshift(mine);
-  selected = null; justVoted = true; sheetOpen = true;
-  $("#q").value = ""; renderList(); renderPanel(); renderRecent();
+$("#form").addEventListener("submit", async e => {
+  e.preventDefault(); if (!selected || busy || !open) return;
+  const pick = selected, name = $("#name").value.trim().replace(/\s+/g, " ").slice(0, 40);
+  busy = true; problem = ""; renderPanel();
+  try {
+    const token = await humanToken();
+    let voter = store.get("econnobel-voter");               // this browser's random ID, made on its first vote
+    if (!voter) { voter = crypto.randomUUID(); store.set("econnobel-voter", voter); }
+    const answer = await fetch(API + "/vote", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ voter, pick, name, token }),
+    });
+    const data = await answer.json().catch(() => ({}));
+    if (!answer.ok) throw new Error(data.error || "Your vote wasn't saved. Try again.");
+    myVote = pick; myName = name || "Anonymous"; store.set("econnobel-vote", JSON.stringify({ pick, name: myName }));
+    selected = null; justVoted = true; sheetOpen = true; $("#q").value = ""; lastResults = "";
+    apply(data);
+  } catch (err) {
+    problem = err instanceof TypeError ? "Couldn't reach the vote counter. Check your connection and try again." : err.message;
+  }
+  busy = false; renderPanel();
 });
 
 /* ---------- sharing: plain links, so no LinkedIn scripts ever load on the page ---------- */
@@ -456,8 +545,8 @@ $("#shCopy").addEventListener("click", async () => {
 $("#shMore").addEventListener("click", () => navigator.share({ title: "EconNobel", text: shareText(), url: SITE }).catch(() => {}));
 
 /* ---------- countdown to the announcement ---------- */
-const CLOSE = Date.UTC(2026, 9, 12, 9, 45); // 12 Oct 2026, 11:45 CEST = 5:45 a.m. Eastern (EDT)
 function tick(){
+  if (open && Date.now() >= CLOSE) { open = false; selected = null; sheetOpen = false; renderList(); renderPanel(); }
   let s = Math.max(0, Math.floor((CLOSE - Date.now()) / 1000));
   const d = Math.floor(s / 86400); s %= 86400; const h = Math.floor(s / 3600); s %= 3600; const m = Math.floor(s / 60); s %= 60;
   const two = n => String(n).padStart(2, "0");
@@ -478,14 +567,14 @@ function kalshiAge(){
   out.title = KX_TIME.toLocaleString("en", { dateStyle: "medium", timeStyle: "short" });   // exact time, in the reader's time zone
 }
 
-// Address options for testing and screenshots: #launch, #picked, #voted, #switch, #search=acemolgu
-const sq = opts.find(o => o.startsWith("search=")); if (sq) $("#q").value = sq.slice(7);
-renderList(); renderPanel(); renderRecent(); tick(); kalshiAge();
-if (opts.includes("picked")) select("pat6");
-if (opts.includes("voted") || opts.includes("switch")) { select("pat6"); $("#name").value = "Farhad"; $("#form").requestSubmit(); }
-if (opts.includes("switch")) select("partha-dasgupta");
+// A search can come in the address: …/econnobel/#search=acemoglu
+const sq = decodeURIComponent(location.hash.slice(1)).split("&").find(o => o.startsWith("search="));
+if (sq) $("#q").value = sq.slice(7);
+renderList(); renderPanel(); renderRecent(); tick(); kalshiAge(); refresh();
 setInterval(tick, 1000);
 setInterval(kalshiAge, 30000);
+setInterval(() => { if (!document.hidden) refresh(); }, 30000);             // results update every 30 seconds
+document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(); });
 </script>
 </body>
 </html>

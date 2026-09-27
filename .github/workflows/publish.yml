@@ -1,0 +1,64 @@
+# Publishes the poll page (the site/ folder) to GitHub Pages: panahovf.github.io/econnobel/
+#
+# Runs:
+#   - every 4 hours: midnight, 4 am, 8 am, noon, 4 pm and 8 pm Toronto time
+#     (GitHub's clock is UTC; Toronto is UTC-4 until 1 November, i.e. for the whole poll),
+#   - whenever something is pushed to main,
+#   - by hand: Actions tab -> "Publish the page" -> "Run workflow".
+#
+# Each run downloads fresh Kalshi odds (data/03_kalshi.ipynb), rebuilds the list (data/05_combine.ipynb) and
+# publishes the page. Nothing is committed back: the fresh list goes straight to the live site.
+# Steps 1, 2 and 4 (RePEc, their profiles, past winners) are run by hand when needed.
+
+name: Publish the page
+
+on:
+  schedule:
+    - cron: "0 */4 * * *"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install what the notebooks need
+        run: pip install pandas requests beautifulsoup4 nbconvert ipykernel
+
+      # If Kalshi can't be reached, carry on with the odds already in the repository.
+      - name: Fresh odds from Kalshi (step 3)
+        working-directory: data
+        continue-on-error: true
+        run: jupyter nbconvert --to notebook --execute 03_kalshi.ipynb --output-dir /tmp/runs --ExecutePreprocessor.timeout=300
+
+      - name: Rebuild the list for the page (step 5)
+        working-directory: data
+        run: jupyter nbconvert --to notebook --execute 05_combine.ipynb --output-dir /tmp/runs --ExecutePreprocessor.timeout=600
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,26 @@
+# EconNobel's vote counter: a Cloudflare Worker (src/index.js) with a D1 database (schema.sql).
+# Deploy with:  npx wrangler deploy
+name = "econnobel"
+main = "src/index.js"
+compatibility_date = "2026-09-20"
+
+[vars]
+# Voting closes when the prize is announced: Monday 12 October 2026, 5:45 a.m. ET (09:45 UTC).
+CLOSES_AT = "2026-10-12T09:45:00Z"
+# Only the poll page may send votes.
+ALLOWED_ORIGINS = "https://panahovf.github.io"
+# The published list of people; the Worker only accepts votes for people on it who can still win.
+CANDIDATES_URL = "https://panahovf.github.io/econnobel/candidates.js"
+# TURNSTILE_SECRET is a secret, set with:  npx wrangler secret put TURNSTILE_SECRET  (never written in this repo)
+
+[[d1_databases]]
+binding = "DB"
+database_name = "econnobel"
+database_id = "00000000-0000-0000-0000-000000000000"   # replaced by the real ID after `wrangler d1 create econnobel`
+
+# At most 20 votes a minute from one network (a campus or office can share one address). Cloudflare keeps this
+# count; we never store IP addresses. The bot check on every vote is the main protection.
+[[ratelimits]]
+name = "VOTE_LIMIT"
+namespace_id = "1001"
+simple = { limit = 20, period = 60 }
