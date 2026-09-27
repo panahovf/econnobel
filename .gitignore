@@ -1,0 +1,25 @@
+# OS / editors
+.DS_Store
+.vscode/
+.idea/
+
+# Dependencies & build output
+node_modules/
+dist/
+.wrangler/
+.vercel/
+
+# Secrets
+.env
+.env.*
+!.env.example
+.dev.vars
+
+# Claude working files live outside this repo (never commit them)
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+
+# Jupyter and Python caches
+.ipynb_checkpoints/
+__pycache__/

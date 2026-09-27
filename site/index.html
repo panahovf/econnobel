@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EconNobel | Farhad Panahov</title>
+<meta name="description" content="Who wins the 2026 Nobel Prize in Economics? A public poll: pick the economist you think will win.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- The portfolio's own stylesheet: fonts, colours, page head and footer come from here, so the poll
+     follows any change to the portfolio. -->
+<link rel="stylesheet" href="https://panahovf.github.io/assets/css/style.css?v=4">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232148cc'/><text x='50' y='71' text-anchor='middle' font-size='58' font-family='Georgia,serif' fill='%23ffffff'>F</text></svg>">
+<style>
+  /* ---------- EconNobel: only what the portfolio stylesheet doesn't cover ---------- */
+  :root{--accent-dk:#1a3aa8;   /* a darker shade of the portfolio's blue, for button hovers */
+        --line-dk:#cdc8bf}     /* a slightly darker hairline: empty radio circles, the "Profile" underline */
+  [hidden]{display:none!important}
+  button,input{font:inherit;color:inherit}
+  .num{font-variant-numeric:tabular-nums}
+
+  /* page head: headline across, then intro (left) and countdown (right, above the vote panel) */
+  .ph{display:grid;grid-template-columns:minmax(0,1fr) 340px;column-gap:56px;align-items:start}
+  .ph h1{grid-column:1/-1}
+  .pagehead .when{margin-top:14px;font-size:.9rem}
+  .pagehead .when b{color:var(--ink);font-weight:600}
+  .countdown{align-self:end}
+  .countdown .units{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--ink);padding-top:14px}
+  .countdown b{display:block;font:700 2.35rem/1 var(--display);letter-spacing:-.02em;font-variant-numeric:tabular-nums lining-nums;color:var(--ink)}
+  .countdown .units span{display:block;margin-top:9px;font-size:.64rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+
+  /* standings + vote panel */
+  .poll{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:56px;align-items:start;padding-bottom:88px}
+  .search{position:relative}
+  .search svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:var(--faint);pointer-events:none}
+  .search input{width:100%;height:50px;border:1px solid var(--line);border-radius:999px;background:var(--white);padding:0 76px 0 48px;font-size:16px;outline:none;transition:border-color .16s,box-shadow .16s;-webkit-appearance:none}
+  .search input::-webkit-search-cancel-button{display:none}
+  .search input:placeholder-shown{padding-right:20px}
+  .search input::placeholder{color:var(--faint)}
+  .search input:focus,.inp:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(33,72,204,.12)}
+  .clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--muted);font-size:.8rem;font-weight:500;cursor:pointer;padding:6px 12px;border-radius:999px}
+  .clear:hover{color:var(--ink);background:var(--wash)}
+  .note{font-size:.86rem;color:var(--muted);margin:12px 4px 0}
+
+  .colhead,.cand{display:grid;grid-template-columns:28px minmax(0,1fr) minmax(0,.9fr) 64px 22px;column-gap:16px;align-items:center}
+  .colhead{padding:26px 10px 10px;font-size:.68rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .colhead .r{text-align:right}
+  .cands{border-top:1px solid var(--ink)}
+  .cand{position:relative;padding:14px 10px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .12s}
+  .pickbtn{border:0;background:none;padding:0;margin:0;font:inherit;color:inherit;text-align:left;cursor:pointer;min-width:0}
+  .pickbtn::after{content:"";position:absolute;inset:0;border-radius:12px}
+  .cand:hover{background:rgba(241,239,235,.75)}
+  .pickbtn:focus-visible{outline:none}
+  .pickbtn:focus-visible::after{outline:2px solid var(--accent);outline-offset:-2px}
+  .cand.on{background:var(--accent-lo);box-shadow:inset 0 0 0 1.5px var(--accent);border-radius:12px;border-bottom-color:transparent}
+  .rk{font-size:.84rem;color:var(--faint);text-align:right}
+  .who{min-width:0}
+  .nm{display:flex;align-items:baseline;gap:10px;font-weight:600;font-size:1rem;line-height:1.3}
+  .nm .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nm .mine{font-size:.74rem;font-weight:600;color:var(--accent);white-space:nowrap}
+  .fd{display:flex;align-items:baseline;gap:6px;min-width:0;font-size:.82rem;color:var(--muted);margin-top:2px}
+  .fd .ins{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fd .dot{color:var(--faint)}
+  .hp{position:relative;z-index:2;flex:none;color:var(--muted);white-space:nowrap;text-decoration:underline;text-decoration-color:var(--line-dk);text-underline-offset:3px}
+  .hp:hover{color:var(--accent);text-decoration-color:var(--accent)}
+  .kx{display:block;font-size:.74rem;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .barcell{min-width:0}
+  .bar{display:block;height:6px;border-radius:0 3px 3px 0;background:var(--accent);min-width:2px;transition:width .5s cubic-bezier(.2,.7,.2,1)}
+  .pct{text-align:right;font-weight:600;font-size:.92rem}
+  .pct.none{font-weight:400;font-size:.8rem;color:var(--faint)}
+  .radio{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line-dk);display:grid;place-items:center;color:#fff;transition:all .12s}
+  .radio svg{opacity:0}
+  .cand.on .radio{background:var(--accent);border-color:var(--accent)}
+  .cand.on .radio svg{opacity:1}
+  .cand.out{cursor:default}
+  .cand.out:hover{background:none}
+  .cand.out .nm{color:var(--ink-soft)}
+  .cand.out .radio{visibility:hidden}
+  .listfoot{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-top:14px;font-size:.8rem;color:var(--muted)}
+  .link{border:0;background:none;padding:0;cursor:pointer;color:var(--accent);font-weight:600;font-size:.84rem;white-space:nowrap}
+  .link:hover{text-decoration:underline;text-underline-offset:3px}
+  .nomatch{padding:18px 10px;font-size:.94rem;color:var(--ink-soft);border-bottom:1px solid var(--line)}
+
+  .side{position:sticky;top:24px}
+  .panel{position:relative;background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:24px}
+  .panel h3{font:700 1.4rem/1.15 var(--display);letter-spacing:-.025em;margin:0 0 16px}
+  .current{display:flex;align-items:center;gap:8px;margin:-4px 0 12px;font-size:.84rem;color:var(--muted)}
+  .current b{color:var(--ink);font-weight:600}
+  .current i{width:16px;height:16px;border-radius:50%;background:var(--accent);display:grid;place-items:center;color:#fff;flex:none}
+  .pick{border-radius:14px;background:var(--wash);padding:15px 16px;min-height:62px;display:flex;align-items:flex-start;gap:12px;font-size:.9rem;color:var(--muted)}
+  .pick.has{background:var(--white);box-shadow:inset 0 0 0 1.5px var(--accent);color:var(--ink)}
+  .pick.own{background:var(--accent-lo)}
+  .pick .who{flex:1}
+  .pick .nm{font-size:1.02rem}
+  .pick .fd{white-space:normal}
+  .pick .ck{width:24px;height:24px;border-radius:50%;background:var(--accent);display:grid;place-items:center;color:#fff;flex:none;margin-top:1px}
+  .lbl{display:block;font-size:.84rem;font-weight:600;margin:18px 0 8px}
+  .lbl em{font-style:normal;font-weight:400;color:var(--muted)}
+  .inp{width:100%;height:48px;border:1px solid var(--line);border-radius:999px;background:var(--white);padding:0 18px;font-size:16px;outline:none;transition:border-color .16s,box-shadow .16s;-webkit-appearance:none}
+  .inp::placeholder{color:var(--faint)}
+  .go{width:100%;height:50px;margin-top:14px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:500;font-size:.92rem;cursor:pointer;transition:background .16s}
+  .go:hover:not(:disabled){background:var(--accent-dk)}
+  .go:disabled{background:var(--wash);color:var(--faint);cursor:not-allowed}
+  .shares{margin-top:20px}
+  .shl{margin:0 0 10px;font-size:.84rem;font-weight:600;color:var(--ink)}
+  .sh{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;border:1px solid var(--line);background:var(--white);border-radius:999px;padding:0 12px;font-size:.85rem;font-weight:500;color:var(--ink);cursor:pointer;white-space:nowrap;transition:border-color .16s,color .16s,background .16s}
+  .sh:hover{text-decoration:none;border-color:var(--accent);color:var(--accent);background:var(--accent-lo)}
+  .sh svg{width:15px;height:15px;flex:none;fill:currentColor}
+  .sh svg.st{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .sh.pri{display:flex;width:100%;height:48px;background:var(--accent);border-color:var(--accent);color:#fff}
+  .sh.pri:hover{background:var(--accent-dk);border-color:var(--accent-dk);color:#fff}
+  .shrow{display:flex;gap:8px;margin-top:8px}
+  .shrow .sh{flex:1}
+  .keep{display:block;margin:14px auto 0}
+  .hint{margin:12px 0 0;font-size:.76rem;color:var(--muted);text-align:center}
+  .close{display:none}
+
+  .recent{margin-top:34px}
+  .recent h4{font-size:.71rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);margin:0;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  .recent ol{list-style:none;margin:0;padding:0;font-size:.88rem}
+  .recent li{padding:10px 0;border-bottom:1px solid var(--line);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .recent li b{color:var(--ink);font-weight:600}
+  .recent--m{display:none}
+
+  @media (max-width:900px){
+    .ph{grid-template-columns:minmax(0,1fr)}
+    .countdown{margin-top:28px}
+    .poll{grid-template-columns:minmax(0,1fr);gap:0;padding-bottom:56px}
+    .colhead,.cand{grid-template-columns:22px minmax(0,1fr) 58px 22px;column-gap:12px}
+    .colhead .c-bar{display:none}
+    .cand{grid-template-areas:"rk who pct radio" ". bar bar .";row-gap:8px;padding:13px 8px}
+    .rk{grid-area:rk} .who{grid-area:who} .barcell{grid-area:bar} .pct{grid-area:pct} .radio{grid-area:radio}
+    .side{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:20;transform:translateY(110%);transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+    .side.open{transform:none}
+    .panel{border:0;border-top:1px solid var(--line);border-radius:20px 20px 0 0;padding:20px 20px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -12px 32px -12px rgba(20,23,28,.25)}
+    .panel h3{font-size:1.2rem;margin-bottom:12px}
+    .recent--d{display:none} .recent--m{display:block}
+    .close{display:block;position:absolute;right:16px;top:16px;border:0;background:var(--wash);border-radius:999px;padding:6px 12px;font-size:.8rem;font-weight:500;color:var(--ink-soft);cursor:pointer}
+    body.sheet .footer{padding-bottom:400px}
+  }
+  @media (prefers-reduced-motion:reduce){.bar,.side,.cand{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="https://panahovf.github.io/index.html">
+      <span class="dot"></span><span class="first">Farhad</span><span class="last">Panahov</span>
+    </a>
+  </div>
+</header>
+
+<section class="pagehead">
+  <div class="wrap ph">
+    <h1>Who wins the 2026 Nobel Prize<br> <span class="accent">in Economics?</span></h1>
+    <div>
+      <p>Pick the economist you think will win. Results update live, and you can change your vote until the prize is announced.</p>
+      <p class="when">Winner announced <b>Monday 12 October, 5:45 a.m. ET</b></p>
+    </div>
+    <div class="countdown">
+      <div class="units num" aria-hidden="true">
+        <div><b id="cdD">–</b><span>Days</span></div>
+        <div><b id="cdH">–</b><span>Hours</span></div>
+        <div><b id="cdM">–</b><span>Min</span></div>
+        <div><b id="cdS">–</b><span>Sec</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="poll">
+    <main>
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Search by name (typos are fine)" aria-label="Search economists">
+        <button class="clear" id="clear" type="button" hidden>Clear</button>
+      </div>
+      <p class="note" id="note" hidden></p>
+      <div class="colhead" aria-hidden="true"><span></span><span>Candidate</span><span class="c-bar"></span><span class="r">Votes</span><span></span></div>
+      <div class="cands" id="rows" role="radiogroup" aria-label="Candidates"></div>
+      <div class="nomatch" id="nomatch" hidden></div>
+      <div class="listfoot">
+        <span>Kalshi odds are from <a href="https://kalshi.com/markets/kxnobelecon" target="_blank" rel="noopener noreferrer">kalshi.com</a>, a prediction market.<span id="kxAge"></span></span>
+        <button class="link" id="more" type="button">Show all</button>
+      </div>
+      <section class="recent recent--m" aria-label="Recent votes"><h4>Recent votes</h4><ol id="recentM"></ol></section>
+    </main>
+
+    <aside class="side" id="side">
+      <div class="panel" id="panel">
+        <button class="close" id="close" type="button">Close</button>
+        <h3 id="ptitle">Your vote</h3>
+        <p class="current" id="current" hidden></p>
+        <div class="pick" id="pick"></div>
+        <form id="form" novalidate>
+          <label class="lbl" for="name">Your name <em>(optional, shown publicly)</em></label>
+          <input class="inp" id="name" maxlength="40" autocomplete="off" placeholder="Anonymous">
+          <button class="go" id="go" type="submit" disabled>Vote</button>
+        </form>
+        <div class="shares" id="shares" hidden>
+          <p class="shl">Share your pick</p>
+          <a class="sh pri" id="shLi" href="#" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.5c0-1.3-.02-3-1.83-3-1.83 0-2.11 1.43-2.11 2.9V21H9z"/></svg>Share on LinkedIn</a>
+          <div class="shrow">
+            <button class="sh" id="shCopy" type="button"><svg class="st" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>Copy link</span></button>
+            <button class="sh" id="shMore" type="button" hidden><svg class="st" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg>More</button>
+          </div>
+        </div>
+        <button class="link keep" id="keep" type="button" hidden></button>
+        <p class="hint" id="hint"></p>
+      </div>
+      <section class="recent recent--d" aria-label="Recent votes"><h4>Recent votes</h4><ol id="recentD"></ol></section>
+    </aside>
+  </div>
+</div>
+
+<footer class="footer" id="contact">
+  <div class="wrap">
+    <div class="row2">
+      <div>
+        <div class="name">Farhad Panahov</div>
+        <div class="place">Economist &middot; Toronto, Canada</div>
+      </div>
+      <div class="social social--dark">
+        <a href="https://www.linkedin.com/in/panahov/" rel="me noopener noreferrer" target="_blank"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.5c0-1.3-.02-3-1.83-3-1.83 0-2.11 1.43-2.11 2.9V21H9z"/></svg> LinkedIn</a>
+        <a href="https://github.com/panahovf" rel="me noopener noreferrer" target="_blank"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.1.82-.26.82-.58v-2.2c-3.34.73-4.04-1.6-4.04-1.6-.55-1.4-1.34-1.77-1.34-1.77-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.84 2.8 1.3 3.49 1 .1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.34-5.47-5.96 0-1.32.47-2.39 1.24-3.23-.13-.3-.54-1.53.12-3.18 0 0 1.01-.33 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.56 3.3-1.23 3.3-1.23.66 1.65.25 2.88.12 3.18.77.84 1.23 1.91 1.23 3.23 0 4.63-2.8 5.65-5.48 5.95.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.58A12 12 0 0 0 12 .5z"/></svg> GitHub</a>
+        <a href="mailto:panahovf93@gmail.com"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 5.5A1.5 1.5 0 0 1 3.5 4h17A1.5 1.5 0 0 1 22 5.5v.3l-10 6-10-6zM2 8.1l9.47 5.68a1 1 0 0 0 1.06 0L22 8.1V18.5a1.5 1.5 0 0 1-1.5 1.5h-17A1.5 1.5 0 0 1 2 18.5z"/></svg> Email</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="fine">&copy; 2026 Farhad Panahov. Views expressed here are my own. EconNobel is an independent poll, not affiliated with the Nobel Foundation.</p>
+      <nav><a href="https://panahovf.github.io/index.html">Home</a><a href="https://panahovf.github.io/research.html">Research</a><a href="https://panahovf.github.io/cv.html">CV</a></nav>
+    </div>
+  </div>
+</footer>
+
+<script src="candidates.js"></script>
+<script>
+/* EconNobel poll page.
+   The list of people comes from candidates.js (made by data/05_combine.ipynb).
+   Votes are placeholders until the vote counter (Cloudflare) is connected. */
+
+/* ---------- people ---------- */
+// Each row of window.CANDIDATES: [id, name, institution, homepage, RePEc profile, status, year won, Kalshi %, best RePEc rank]
+const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z]+/g, " ").trim();
+const people = window.CANDIDATES.map(([id, name, inst, homepage, profile, status, won, kalshi, rank]) => {
+  const n = norm(name);
+  return { id, name, inst, homepage, profile, won, dead: status === "deceased", out: status !== "eligible",
+           kalshi, rank, votes: 0, n, toks: n.split(" ") };
+});
+const byId = Object.fromEntries(people.map(p => [p.id, p]));
+const surname = n => n.replace(/,?\s+(Jr|Sr)\.?$|\s+(II|III)$/, "").split(/\s+/).slice(-1)[0];
+
+// Only ever link to http(s) addresses: homepages are typed in by RePEc users.
+function safeUrl(u){
+  if (!u) return "";
+  if (!/^https?:\/\//i.test(u)) u = "http://" + u;
+  try { const x = new URL(u); return x.protocol === "http:" || x.protocol === "https:" ? x.href : ""; } catch { return ""; }
+}
+
+/* ---------- placeholder votes, until the vote counter is connected ----------
+   #launch in the address shows the page as it will look before anyone votes. */
+const opts = decodeURIComponent(location.hash.slice(1)).split("&");
+const launch = opts.includes("launch");
+const PLACEHOLDER_VOTES = { "pat6": 34, "partha-dasgupta": 29, "pbl81": 22, "pwo3": 15, "psh93": 9 };
+if (!launch) for (const [id, v] of Object.entries(PLACEHOLDER_VOTES)) if (byId[id]) byId[id].votes = v;
+const RECENT = launch ? [] : [["Amara O.", "partha-dasgupta"], ["Jonas", "pwo3"], ["Anonymous", "pat6"], ["Priya S.", "pbl81"], ["Mateo R.", "psh93"]];
+
+/* ---------- typo-tolerant search ---------- */
+function osa(a, b){
+  const m = a.length, n = b.length; if (!m) return n; if (!n) return m;
+  const d = Array.from({ length: m + 1 }, (_, i) => { const r = new Array(n + 1).fill(0); r[0] = i; return r; });
+  for (let j = 0; j <= n; j++) d[0][j] = j;
+  for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) {
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+  }
+  return d[m][n];
+}
+function match(Q, p){ // Q is normalized; 0 whole word, 1 word start, 2 anywhere, 3 one typo, 4 two typos
+  const full = p.n, toks = p.toks;
+  if (full === Q || toks.includes(Q)) return 0;
+  if (full.startsWith(Q) || toks.some(t => t.startsWith(Q))) return 1;
+  if (full.includes(Q)) return 2;
+  const tol = Q.length <= 3 ? 0 : Q.length <= 7 ? 1 : 2;
+  let best = Infinity;
+  for (const t of [full, ...toks]) for (const L of [Q.length - 1, Q.length, Q.length + 1]) if (L > 0) best = Math.min(best, osa(Q, t.slice(0, L)));
+  return best <= tol ? 2 + best : null;
+}
+
+/* ---------- state & rendering ---------- */
+let selected = null, myVote = null, myName = "", justVoted = false, showAll = false, sheetOpen = false;
+const eligible = () => people.filter(p => !p.out);
+const total = () => eligible().reduce((s, p) => s + p.votes, 0);
+const pct = p => (p.votes / total() * 100).toFixed(1) + "%";
+const $ = s => document.querySelector(s);
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const CHECK = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const CHECK_S = CHECK.replace(/width="12" height="12"/, 'width="10" height="10"');
+
+// The table's order: people with votes (most first), then Kalshi's names by their chance.
+// The page shows the first 10 and "Show all" shows the rest. Before anyone votes, it is simply Kalshi's order.
+function tableOrder(){
+  const voted = eligible().filter(p => p.votes > 0).sort((a, b) => b.votes - a.votes || a.name.localeCompare(b.name));
+  const onKalshi = eligible().filter(p => p.votes === 0 && p.kalshi != null).sort((a, b) => b.kalshi - a.kalshi || a.name.localeCompare(b.name));
+  return voted.concat(onKalshi);
+}
+
+function rowEl(p, rank, max){
+  const row = el("div", "cand" + (p.out ? " out" : "") + (!p.out && p.id === (selected || myVote) ? " on" : ""));
+  row.dataset.id = p.id;
+  const who = el("span", "who"), nm = el("span", "nm"), line = el("span", "fd");
+  if (p.out) nm.append(el("span", "t", p.name));
+  else {
+    // The name is the button that picks this person; its ::after covers the whole row, so the row is clickable.
+    const pick = el("button", "t pickbtn", p.name); pick.type = "button";
+    pick.setAttribute("role", "radio"); pick.setAttribute("aria-checked", p.id === (selected || myVote));
+    nm.append(pick);
+  }
+  if (p.id === myVote) nm.append(el("span", "mine", "Your vote"));
+
+  // The author's line: institution (or why they can't be picked), then "Profile": a link to their homepage, or to
+  // their RePEc profile if they don't list one (hovering shows which).
+  const note = p.out ? (p.won ? `Won in ${p.won} · not eligible` : "Deceased · not eligible") : p.inst;
+  if (note) { const ins = el("span", "ins", note); ins.title = note; line.append(ins); }
+  const url = safeUrl(p.homepage) || (p.profile ? "https://ideas.repec.org/" + p.profile + ".html" : "");
+  if (url) {
+    const where = safeUrl(p.homepage) ? "Homepage" : "RePEc profile";
+    if (note) line.append(el("span", "dot", "·"));
+    const a = el("a", "hp", "Profile");
+    a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer";
+    a.title = where; a.setAttribute("aria-label", where + " of " + p.name);
+    line.append(a);
+  }
+  who.append(nm, line);
+  if (!p.out && p.kalshi != null) who.append(el("span", "kx", `Kalshi: ${p.kalshi}% chance of winning`));
+
+  const cell = el("span", "barcell");
+  let pc;
+  if (!p.out && p.votes) { const bar = el("span", "bar"); bar.style.width = (p.votes / max * 100) + "%"; cell.append(bar); pc = el("span", "pct num", pct(p)); }
+  else pc = el("span", "pct none", p.out ? "" : "No votes");
+  const radio = el("span", "radio"); radio.innerHTML = CHECK;
+  row.append(el("span", "rk num", rank ? String(rank) : ""), who, cell, pc, radio);
+  return row;
+}
+
+function renderList(){
+  const q = $("#q").value.trim(), Q = norm(q), searching = Q.length >= 2;
+  const max = Math.max(1, ...eligible().map(p => p.votes));
+  const order = tableOrder();
+  const votedIds = order.filter(p => p.votes > 0).map(p => p.id);   // rank numbers go to people with votes
+  let list, note = "";
+  if (searching) {
+    const hits = people.map(p => ({ p, r: match(Q, p) })).filter(x => x.r !== null);
+    hits.sort((a, b) => (a.r - b.r) || (a.p.out - b.p.out) || (b.p.votes - a.p.votes) || ((a.p.rank || 1e9) - (b.p.rank || 1e9)) || a.p.name.localeCompare(b.p.name));
+    list = hits.slice(0, 8).map(x => x.p);
+    if (list.length && !hits.some(x => x.r <= 2)) note = `No exact match for “${q}”. Closest names:`;
+  } else {
+    list = showAll ? order : order.slice(0, 10);
+    $("#more").textContent = showAll ? "Show top 10" : `Show all ${order.length}`;
+  }
+  $("#rows").replaceChildren(...list.map(p => rowEl(p, p.votes > 0 && !p.out ? votedIds.indexOf(p.id) + 1 : 0, max)));
+  $("#note").hidden = !note; $("#note").textContent = note;   // query text → textContent only
+  $("#more").hidden = searching || order.length <= 10; $("#clear").hidden = !q;
+  const nm = $("#nomatch"); nm.hidden = !(searching && !list.length);
+  if (!nm.hidden) {
+    const b = el("button", "link", "Suggest a name"); b.type = "button";
+    b.addEventListener("click", () => nm.replaceChildren("Thanks. We add real contenders to the list."));
+    nm.replaceChildren(`No one called “${q}” on the list. `, b);
+  }
+}
+
+/* ---------- vote panel: empty · picked · your vote · switching ---------- */
+function renderPanel(){
+  const id = selected || myVote, p = byId[id];
+  const mine = !!p && id === myVote, switching = !!myVote && !!selected && selected !== myVote;
+  $("#ptitle").textContent = mine && justVoted ? "Vote recorded" : "Your vote";
+  const cur = $("#current"); cur.hidden = !switching;
+  if (switching) { const i = el("i"); i.innerHTML = CHECK_S; const t = el("span"); t.append("Current vote: ", el("b", "", byId[myVote].name)); cur.replaceChildren(i, t); }
+  const box = $("#pick"); box.className = "pick" + (p ? " has" : "") + (mine ? " own" : "");
+  if (!p) box.replaceChildren("Pick a name from the list.");
+  else {
+    const who = el("div", "who");
+    who.append(el("span", "nm", p.name));
+    if (p.inst) who.append(el("span", "fd", p.inst));
+    const kids = [who];
+    if (mine) { const ck = el("i", "ck"); ck.innerHTML = CHECK; kids.unshift(ck); }
+    box.replaceChildren(...kids);
+  }
+  $("#form").hidden = mine;
+  const go = $("#go"); go.disabled = !p || mine;
+  go.textContent = !p ? "Vote" : switching ? `Switch my vote to ${surname(p.name)}` : `Vote for ${surname(p.name)}`;
+  $("#shares").hidden = !mine; if (mine) setShareLinks();
+  const keep = $("#keep"); keep.hidden = !switching;
+  if (switching) keep.textContent = `Keep my vote for ${surname(byId[myVote].name)}`;
+  $("#hint").textContent = mine ? "To change it, just pick another name." : "One vote per browser. Change it until 12 Oct.";
+  $("#side").classList.toggle("open", sheetOpen);
+  document.body.classList.toggle("sheet", sheetOpen);
+}
+function select(id){
+  selected = id && id !== myVote ? id : null; justVoted = false; sheetOpen = !!id;
+  if (selected && myVote && !$("#name").value && myName !== "Anonymous") $("#name").value = myName;
+  const on = selected || myVote;
+  document.querySelectorAll(".cand").forEach(r => {
+    const isOn = !r.classList.contains("out") && r.dataset.id === on;
+    r.classList.toggle("on", isOn);
+    const b = r.querySelector(".pickbtn"); if (b) b.setAttribute("aria-checked", isOn);
+  });
+  renderPanel();
+}
+
+function renderRecent(){
+  const items = () => RECENT.length
+    ? RECENT.slice(0, 5).map(([n, id]) => { const li = el("li"); li.append(el("b", "", n), " picked " + surname(byId[id].name)); return li; }) // names → textContent only
+    : [el("li", "", "No votes yet.")];
+  $("#recentD").replaceChildren(...items()); $("#recentM").replaceChildren(...items());
+}
+
+/* ---------- events ---------- */
+// Clicking a name picks it; clicking the picked name again un-picks it.
+$("#rows").addEventListener("click", e => {
+  const b = e.target.closest(".pickbtn"); if (!b) return;
+  const id = b.closest(".cand").dataset.id;
+  select(id === selected ? null : id);
+});
+$("#q").addEventListener("input", renderList);
+$("#clear").addEventListener("click", () => { $("#q").value = ""; renderList(); $("#q").focus(); });
+$("#more").addEventListener("click", () => { showAll = !showAll; renderList(); });
+$("#close").addEventListener("click", () => select(null));   // phones: closing the sheet also un-picks
+$("#keep").addEventListener("click", () => select(myVote));
+$("#form").addEventListener("submit", e => {
+  e.preventDefault(); if (!selected) return;
+  const name = $("#name").value.trim().replace(/\s+/g, " ").slice(0, 40) || "Anonymous";
+  if (myVote) { byId[myVote].votes--; const i = RECENT.findIndex(x => x.me); if (i > -1) RECENT.splice(i, 1); }
+  myVote = selected; myName = name; byId[myVote].votes++;
+  const mine = [name, myVote]; mine.me = true; RECENT.unshift(mine);
+  selected = null; justVoted = true; sheetOpen = true;
+  $("#q").value = ""; renderList(); renderPanel(); renderRecent();
+});
+
+/* ---------- sharing: plain links, so no LinkedIn scripts ever load on the page ---------- */
+const SITE = "https://panahovf.github.io/econnobel/";
+const shareText = () => `I picked ${byId[myVote].name} to win the 2026 Nobel Prize in Economics. Who's your pick?`;
+function setShareLinks(){
+  $("#shLi").href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(SITE)}`;
+}
+$("#shMore").hidden = !navigator.share; // the device's own share menu (Messages, WhatsApp, email…), where the browser offers one
+$("#shCopy").addEventListener("click", async () => {
+  const lab = $("#shCopy span");
+  try { await navigator.clipboard.writeText(SITE); lab.textContent = "Link copied"; }
+  catch { lab.textContent = "Couldn't copy here"; }
+  setTimeout(() => lab.textContent = "Copy link", 2200);
+});
+$("#shMore").addEventListener("click", () => navigator.share({ title: "EconNobel", text: shareText(), url: SITE }).catch(() => {}));
+
+/* ---------- countdown to the announcement ---------- */
+const CLOSE = Date.UTC(2026, 9, 12, 9, 45); // 12 Oct 2026, 11:45 CEST = 5:45 a.m. Eastern (EDT)
+function tick(){
+  let s = Math.max(0, Math.floor((CLOSE - Date.now()) / 1000));
+  const d = Math.floor(s / 86400); s %= 86400; const h = Math.floor(s / 3600); s %= 3600; const m = Math.floor(s / 60); s %= 60;
+  const two = n => String(n).padStart(2, "0");
+  $("#cdD").textContent = d; $("#cdH").textContent = two(h); $("#cdM").textContent = two(m); $("#cdS").textContent = two(s);
+}
+
+/* ---------- when Kalshi's odds were last updated (the note under the table) ----------
+   For now the time comes from candidates.js: when data/03_kalshi.ipynb last ran. */
+const KX_TIME = new Date(window.KALSHI_UPDATED || NaN);
+const ago = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+function kalshiAge(){
+  const out = $("#kxAge");
+  if (isNaN(KX_TIME)) { out.textContent = ""; return; }
+  const min = Math.max(0, Math.round((Date.now() - KX_TIME) / 60000));
+  const when = min < 1 ? "just now" : min < 60 ? ago.format(-min, "minute")
+    : min < 1440 ? ago.format(-Math.round(min / 60), "hour") : ago.format(-Math.round(min / 1440), "day");
+  out.textContent = " Updated " + when + ".";
+  out.title = KX_TIME.toLocaleString("en", { dateStyle: "medium", timeStyle: "short" });   // exact time, in the reader's time zone
+}
+
+// Address options for testing and screenshots: #launch, #picked, #voted, #switch, #search=acemolgu
+const sq = opts.find(o => o.startsWith("search=")); if (sq) $("#q").value = sq.slice(7);
+renderList(); renderPanel(); renderRecent(); tick(); kalshiAge();
+if (opts.includes("picked")) select("pat6");
+if (opts.includes("voted") || opts.includes("switch")) { select("pat6"); $("#name").value = "Farhad"; $("#form").requestSubmit(); }
+if (opts.includes("switch")) select("partha-dasgupta");
+setInterval(tick, 1000);
+setInterval(kalshiAge, 30000);
+</script>
+</body>
+</html>
