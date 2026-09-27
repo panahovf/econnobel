@@ -28,6 +28,11 @@
         --line-dk:#cdc8bf;     /* a slightly darker hairline: empty radio circles, the "Profile" underline */
         --err:#b42318}         /* error messages */
   [hidden]{display:none!important}
+
+  /* header: "EconNobel" (the poll), then "by Farhad Panahov" (a link back to the portfolio) */
+  .brand a:hover{text-decoration:none}
+  .brand .by{color:var(--muted)}
+  .brand .by:hover{color:var(--ink)}
   button,input{font:inherit;color:inherit}
   .num{font-variant-numeric:tabular-nums}
 
@@ -126,6 +131,9 @@
   .sh.pri:hover{background:var(--accent-dk);border-color:var(--accent-dk);color:#fff}
   .shrow{display:flex;gap:8px;margin-top:8px}
   .shrow .sh{flex:1}
+  .shmenu{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+  .shmenu .sh{min-width:0}
+  #shMore[aria-expanded="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-lo)}
   .keep{display:block;margin:14px auto 0}
   .hint{margin:12px 0 0;font-size:.76rem;color:var(--muted);text-align:center}
   .hint.err{color:var(--err)}
@@ -153,7 +161,7 @@
     .panel h3{font-size:1.2rem;margin-bottom:12px}
     .recent--d{display:none} .recent--m{display:block}
     .close{display:block;position:absolute;right:16px;top:16px;border:0;background:var(--wash);border-radius:999px;padding:6px 12px;font-size:.8rem;font-weight:500;color:var(--ink-soft);cursor:pointer}
-    body.sheet .footer{padding-bottom:400px}
+    body.sheet .footer{padding-bottom:480px}
   }
   @media (prefers-reduced-motion:reduce){.bar,.side,.cand{transition:none}}
 </style>
@@ -162,9 +170,10 @@
 
 <header class="topbar">
   <div class="wrap">
-    <a class="brand" href="https://panahovf.github.io/index.html">
-      <span class="dot"></span><span class="first">Farhad</span><span class="last">Panahov</span>
-    </a>
+    <!-- The poll's name, then the way back to the portfolio, in the portfolio's brand style (dot, bold, light) -->
+    <div class="brand">
+      <span class="dot"></span><a class="first" href="./">EconNobel</a><a class="last by" href="https://panahovf.github.io/index.html">by Farhad Panahov</a>
+    </div>
   </div>
 </header>
 
@@ -222,7 +231,14 @@
           <a class="sh pri" id="shLi" href="#" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.5c0-1.3-.02-3-1.83-3-1.83 0-2.11 1.43-2.11 2.9V21H9z"/></svg>Share on LinkedIn</a>
           <div class="shrow">
             <button class="sh" id="shCopy" type="button"><svg class="st" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>Copy link</span></button>
-            <button class="sh" id="shMore" type="button" hidden><svg class="st" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg>More</button>
+            <button class="sh" id="shMore" type="button" aria-expanded="false" aria-controls="shMenu"><svg class="st" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg>More</button>
+          </div>
+          <!-- "More": plain links too (no scripts from these sites load on the page) -->
+          <div class="shmenu" id="shMenu" hidden>
+            <a class="sh" id="shBsky" href="#" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.056-3.912.58-7.387 2.005-2.83 7.078 5.013 5.19 6.87-1.113 7.823-4.308.953 3.195 2.05 9.271 7.733 4.308 4.267-4.308 1.172-6.498-2.74-7.078a8.741 8.741 0 0 1-.415-.056c.14.017.279.036.415.056 2.67.297 5.568-.628 6.383-3.364.246-.828.624-5.79.624-6.478 0-.69-.139-1.861-.902-2.206-.659-.298-1.664-.62-4.3 1.24C16.046 4.748 13.087 8.687 12 10.8Z"/></svg>Bluesky</a>
+            <a class="sh" id="shX" href="#" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>X (Twitter)</a>
+            <a class="sh" id="shSub" href="https://substack.com/notes" target="_blank" rel="noopener noreferrer" title="Copies your post, then opens Substack Notes so you can paste it"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/></svg><span>Substack</span></a>
+            <button class="sh" id="shNative" type="button" hidden><svg class="st" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>Other apps</button>
           </div>
         </div>
         <button class="link keep" id="keep" type="button" hidden></button>
@@ -538,16 +554,36 @@ $("#form").addEventListener("submit", async e => {
 const SITE = "https://panahovf.github.io/econnobel/";
 const shareText = () => `I picked ${byId[myVote].name} to win the 2026 Nobel Prize in Economics. Who's your pick?`;
 function setShareLinks(){
+  const text = shareText();
   $("#shLi").href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(SITE)}`;
+  $("#shBsky").href = `https://bsky.app/intent/compose?text=${encodeURIComponent(text + " " + SITE)}`;
+  $("#shX").href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(SITE)}`;
 }
-$("#shMore").hidden = !navigator.share; // the device's own share menu (Messages, WhatsApp, email…), where the browser offers one
 $("#shCopy").addEventListener("click", async () => {
   const lab = $("#shCopy span");
   try { await navigator.clipboard.writeText(SITE); lab.textContent = "Link copied"; }
   catch { lab.textContent = "Couldn't copy here"; }
   setTimeout(() => lab.textContent = "Copy link", 2200);
 });
-$("#shMore").addEventListener("click", () => navigator.share({ title: "EconNobel", text: shareText(), url: SITE }).catch(() => {}));
+// "More" opens a second row: Bluesky, X, Substack, and the device's own share menu where there is one.
+$("#shMore").addEventListener("click", () => {
+  const menu = $("#shMenu"); menu.hidden = !menu.hidden;
+  $("#shMore").setAttribute("aria-expanded", String(!menu.hidden));
+});
+$("#shNative").hidden = !navigator.share;   // Messages, WhatsApp, email… (mostly phones)
+$("#shNative").addEventListener("click", () => navigator.share({ title: "EconNobel", text: shareText(), url: SITE }).catch(() => {}));
+// Substack has no share link, so the post is copied first; the link then opens Substack Notes to paste it into.
+// (Copied straight away, before the new tab takes focus.)
+$("#shSub").addEventListener("click", () => {
+  const box = el("textarea"); box.value = shareText() + " " + SITE; box.readOnly = true;
+  box.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+  document.body.append(box); box.select(); box.setSelectionRange(0, box.value.length);
+  let copied = false; try { copied = document.execCommand("copy"); } catch {}
+  box.remove();
+  if (!copied && navigator.clipboard) navigator.clipboard.writeText(shareText() + " " + SITE).catch(() => {});
+  const lab = $("#shSub span"); lab.textContent = "Copied: paste it";
+  setTimeout(() => lab.textContent = "Substack", 4000);
+});
 
 /* ---------- countdown to the announcement ---------- */
 function tick(){
