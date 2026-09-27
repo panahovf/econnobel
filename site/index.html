@@ -279,7 +279,7 @@ function safeUrl(u){
 
 /* ---------- the vote counter ---------- */
 const API = "https://econnobel.econnobel-worker.workers.dev";   // the Worker's address
-const TURNSTILE_KEY = "TURNSTILE-SITE-KEY";                      // public key for Cloudflare's bot check
+const TURNSTILE_KEY = "0x4AAAAAAFEz9T0YoIvQVx-J";                // public key for Cloudflare's bot check
 const CLOSE = Date.UTC(2026, 9, 12, 9, 45);   // voting closes 12 Oct 2026, 5:45 a.m. Eastern (EDT) = 9:45 UTC
 let open = Date.now() < CLOSE;                // the Worker also says so, and refuses late votes
 let RECENT = null;                            // the five latest votes, [name, id], once loaded
