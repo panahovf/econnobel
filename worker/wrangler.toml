@@ -16,7 +16,7 @@ CANDIDATES_URL = "https://panahovf.github.io/econnobel/candidates.js"
 [[d1_databases]]
 binding = "DB"
 database_name = "econnobel"
-database_id = "00000000-0000-0000-0000-000000000000"   # replaced by the real ID after `wrangler d1 create econnobel`
+database_id = "e1fc2933-151b-42cc-b293-00265eac8dab"
 
 # At most 20 votes a minute from one network (a campus or office can share one address). Cloudflare keeps this
 # count; we never store IP addresses. The bot check on every vote is the main protection.
