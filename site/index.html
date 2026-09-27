@@ -11,9 +11,11 @@
 <meta property="og:url" content="https://panahovf.github.io/econnobel/">
 <meta property="og:title" content="Who wins the 2026 Nobel Prize in Economics?">
 <meta property="og:description" content="A public poll. Pick the economist you think will win; the winner is announced Monday 12 October.">
-<meta property="og:image" content="https://panahovf.github.io/econnobel/og.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<!-- Raise the "?v=2" number whenever og.png changes: the new address makes LinkedIn and others fetch the new picture
+     instead of showing a copy they saved earlier. -->
+<meta property="og:image" content="https://panahovf.github.io/econnobel/og.png?v=2">
+<meta property="og:image:width" content="2400">
+<meta property="og:image:height" content="1260">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,7 +44,7 @@
   .pagehead .when{margin-top:14px;font-size:.9rem}
   .pagehead .when b{color:var(--ink);font-weight:600}
   .countdown{align-self:end}
-  .countdown .units{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--ink);padding-top:14px}
+  .countdown .units{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--muted);padding-top:14px}
   .countdown b{display:block;font:700 2.35rem/1 var(--display);letter-spacing:-.02em;font-variant-numeric:tabular-nums lining-nums;color:var(--ink)}
   .countdown .units span{display:block;margin-top:9px;font-size:.64rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
 
@@ -62,7 +64,7 @@
   .colhead,.cand{display:grid;grid-template-columns:28px minmax(0,1fr) minmax(0,.9fr) 64px 22px;column-gap:16px;align-items:center}
   .colhead{padding:26px 10px 10px;font-size:.68rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
   .colhead .r{text-align:right}
-  .cands{border-top:1px solid var(--ink)}
+  .cands{border-top:1px solid var(--muted)}
   .cand{position:relative;padding:14px 10px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .12s}
   .pickbtn{border:0;background:none;padding:0;margin:0;font:inherit;color:inherit;text-align:left;cursor:pointer;min-width:0}
   .pickbtn::after{content:"";position:absolute;inset:0;border-radius:12px}
@@ -137,7 +139,6 @@
   .keep{display:block;margin:14px auto 0}
   .hint{margin:12px 0 0;font-size:.76rem;color:var(--muted);text-align:center}
   .hint.err{color:var(--err)}
-  .footer .fine a{color:inherit;text-decoration:underline;text-underline-offset:2px}
   .close{display:none}
 
   .recent{margin-top:34px}
@@ -170,9 +171,9 @@
 
 <header class="topbar">
   <div class="wrap">
-    <!-- The poll's name, then the way back to the portfolio, in the portfolio's brand style (dot, bold, light) -->
+    <!-- The poll's name (plain text), then the way back to the portfolio, in the portfolio's brand style (dot, bold, light) -->
     <div class="brand">
-      <span class="dot"></span><a class="first" href="./">EconNobel</a><a class="last by" href="https://panahovf.github.io/index.html">by Farhad Panahov</a>
+      <span class="dot"></span><span class="first">EconNobel</span><a class="last by" href="https://panahovf.github.io/index.html">by Farhad Panahov</a>
     </div>
   </div>
 </header>
@@ -208,7 +209,8 @@
       <div class="cands" id="rows" role="radiogroup" aria-label="Candidates"></div>
       <div class="nomatch" id="nomatch" hidden></div>
       <div class="listfoot">
-        <span>Kalshi odds are from <a href="https://kalshi.com/markets/kxnobelecon" target="_blank" rel="noopener noreferrer">kalshi.com</a>, a prediction market.<span id="kxAge"></span></span>
+        <span>Kalshi odds are from <a href="https://kalshi.com/markets/kxnobelecon" target="_blank" rel="noopener noreferrer">kalshi.com</a>, a prediction market.<span id="kxAge"></span><br>
+          The list of economists comes from <a href="https://ideas.repec.org/top/" target="_blank" rel="noopener noreferrer">RePEc/IDEAS rankings</a>.</span>
         <button class="link" id="more" type="button">Show all</button>
       </div>
       <section class="recent recent--m" aria-label="Recent votes"><h4>Recent votes</h4><ol id="recentM"></ol></section>
@@ -263,7 +265,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p class="fine">&copy; 2026 Farhad Panahov. Views expressed here are my own. EconNobel is an independent poll, not affiliated with the Nobel Foundation. The list of economists comes from <a href="https://ideas.repec.org/top/" target="_blank" rel="noopener noreferrer">RePEc/IDEAS rankings</a>.</p>
+      <p class="fine">&copy; 2026 Farhad Panahov. Views expressed here are my own.</p>
       <nav><a href="https://panahovf.github.io/index.html">Home</a><a href="https://panahovf.github.io/research.html">Research</a><a href="https://panahovf.github.io/cv.html">CV</a></nav>
     </div>
   </div>
