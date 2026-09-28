@@ -42,8 +42,10 @@ The page sends votes to a Cloudflare Worker (`worker/src/index.js`), which keeps
 - Voting closes by itself on Monday 12 October 2026 at 5:45 a.m. ET.
 
 To change the Worker: edit it, then `cd worker && npm install && npx wrangler deploy`. To try it on your own
-computer: `npx wrangler dev`, with Turnstile's test secret in `worker/.dev.vars`
-(`TURNSTILE_SECRET=1x0000000000000000000000000000000AA`).
+computer: `npx wrangler dev`, with one of Cloudflare's public dummy Turnstile secrets
+([listed here](https://developers.cloudflare.com/turnstile/troubleshooting/testing/)) in `worker/.dev.vars`
+as `TURNSTILE_SECRET=...`. That file is git-ignored. The real secret is set only on Cloudflare
+(`npx wrangler secret put TURNSTILE_SECRET`) and never goes in the repo.
 
 ## Running the notebooks
 
