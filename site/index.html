@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EconNobel | Farhad Panahov</title>
-<meta name="description" content="Who wins the 2026 Nobel Prize in Economics? A public poll: pick the economist you think will win.">
+<meta name="description" content="Who wins the 2026 Nobel Prize in Economics? A public poll, now closed: the prize went to Robert E. Hall and Michael Woodford.">
 <link rel="canonical" href="https://panahovf.github.io/econnobel/">
 <!-- The preview card when the link is shared (LinkedIn, messages...) -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://panahovf.github.io/econnobel/">
 <meta property="og:title" content="Who wins the 2026 Nobel Prize in Economics?">
-<meta property="og:description" content="A public poll. Pick the economist you think will win; the winner is announced Monday 12 October.">
+<meta property="og:description" content="A public poll, now closed. The prize went to Robert E. Hall and Michael Woodford; see how the votes fell.">
 <!-- Raise the "?v=2" number whenever og.png changes: the new address makes LinkedIn and others fetch the new picture
      instead of showing a copy they saved earlier. -->
 <meta property="og:image" content="https://panahovf.github.io/econnobel/og.png?v=2">
@@ -38,15 +38,18 @@
   button,input{font:inherit;color:inherit}
   .num{font-variant-numeric:tabular-nums}
 
-  /* page head: headline across, then intro (left) and countdown (right, above the vote panel) */
+  /* page head: headline across, then intro + poll recap (left) and the winners (right, above the vote panel) */
   .ph{display:grid;grid-template-columns:minmax(0,1fr) 340px;column-gap:56px;align-items:start}
   .ph h1{grid-column:1/-1}
   .pagehead .when{margin-top:14px;font-size:.9rem}
   .pagehead .when b{color:var(--ink);font-weight:600}
-  .countdown{align-self:end}
-  .countdown .units{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--muted);padding-top:14px}
-  .countdown b{display:block;font:700 2.35rem/1 var(--display);letter-spacing:-.02em;font-variant-numeric:tabular-nums lining-nums;color:var(--ink)}
-  .countdown .units span{display:block;margin-top:9px;font-size:.64rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+  .pagehead .recap{margin-top:14px;font-size:.9rem}
+  .winners{align-self:end;border-top:1px solid var(--muted);padding-top:14px}
+  .winners p{margin:0}
+  .winners .wl{font-size:.64rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+  .winners .wn{margin-top:10px;font:700 1.45rem/1.15 var(--display);letter-spacing:-.02em;color:var(--ink)}
+  .winners .wn span{display:block;margin-top:3px;font:400 .82rem/1.3 var(--sans);letter-spacing:0;color:var(--muted)}
+  .winners .wc{margin-top:12px;font-size:.84rem;font-style:italic;color:var(--ink-soft)}
 
   /* standings + vote panel */
   .poll{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:56px;align-items:start;padding-bottom:88px}
@@ -150,7 +153,7 @@
 
   @media (max-width:900px){
     .ph{grid-template-columns:minmax(0,1fr)}
-    .countdown{margin-top:28px}
+    .winners{margin-top:28px}
     .poll{grid-template-columns:minmax(0,1fr);gap:0;padding-bottom:56px}
     .colhead,.cand{grid-template-columns:22px minmax(0,1fr) 58px 22px;column-gap:12px}
     .colhead .c-bar{display:none}
@@ -182,16 +185,21 @@
   <div class="wrap ph">
     <h1>Who wins the 2026 Nobel Prize<br> <span class="accent">in Economics?</span></h1>
     <div>
-      <p>Pick the economist you think will win. Results update live, and you can change your vote until the prize is announced.</p>
+      <p>A just-for-fun poll: from late September until the announcement, anyone could pick the economist they thought
+        would win, from RePEc's rankings with Kalshi's prediction-market odds alongside. No accounts, no money on the
+        line, just some bragging rights.</p>
       <p class="when">Winner announced <b>Monday 12 October, 5:45 a.m. ET</b></p>
+      <p class="recap">The prize went to Robert E. Hall and Michael Woodford. Neither got a single vote here, and
+        neither was on Kalshi's list (its favourite that morning was Ariel Pakes, at 21%). Of the 67 votes, Olivier
+        Blanchard and Ariel Pakes got 13 each, then Ricardo Hausmann 8. Of the forecasts we followed, only Clarivate
+        had named Woodford. Thanks to everyone who voted!</p>
     </div>
-    <div class="countdown">
-      <div class="units num" aria-hidden="true">
-        <div><b id="cdD">–</b><span>Days</span></div>
-        <div><b id="cdH">–</b><span>Hours</span></div>
-        <div><b id="cdM">–</b><span>Min</span></div>
-        <div><b id="cdS">–</b><span>Sec</span></div>
-      </div>
+    <!-- The winners: where the countdown stood until the announcement -->
+    <div class="winners">
+      <p class="wl">The 2026 winners</p>
+      <p class="wn">Robert E. Hall<span>Stanford University</span></p>
+      <p class="wn">Michael Woodford<span>Columbia University</span></p>
+      <p class="wc">“for microeconomic foundations of macroeconomic stabilisation”</p>
     </div>
   </div>
 </section>
@@ -209,7 +217,7 @@
       <div class="cands" id="rows" role="radiogroup" aria-label="Candidates"></div>
       <div class="nomatch" id="nomatch" hidden></div>
       <div class="listfoot">
-        <span>Kalshi odds are from <a href="https://kalshi.com/markets/kxnobelecon" target="_blank" rel="noopener noreferrer">kalshi.com</a>, a prediction market.<span id="kxAge"></span><br>
+        <span>Kalshi odds from <a href="https://kalshi.com/markets/kxnobelecon" target="_blank" rel="noopener noreferrer">kalshi.com</a>, a prediction market, showed here until voting closed.<span id="kxAge"></span><br>
           The list of economists comes from <a href="https://ideas.repec.org/top/" target="_blank" rel="noopener noreferrer">RePEc/IDEAS rankings</a>.</span>
         <button class="link" id="more" type="button">Show all</button>
       </div>
@@ -384,7 +392,8 @@ function rowEl(p, rank, max){
     line.append(a);
   }
   who.append(nm, line);
-  if (!p.out && p.kalshi != null) who.append(el("span", "kx", `Kalshi: ${p.kalshi}% chance of winning`));
+  // Kalshi's odds only while voting is open: after the announcement its settled markets mean nothing
+  if (open && !p.out && p.kalshi != null) who.append(el("span", "kx", `Kalshi: ${p.kalshi}% chance of winning`));
 
   const cell = el("span", "barcell");
   let pc;
@@ -590,13 +599,9 @@ $("#shSub").addEventListener("click", () => {
   setTimeout(() => lab.textContent = "Substack", 4000);
 });
 
-/* ---------- countdown to the announcement ---------- */
+/* ---------- close voting at the announcement (the countdown is gone: the winners show there now) ---------- */
 function tick(){
   if (open && Date.now() >= CLOSE) { open = false; selected = null; sheetOpen = false; renderList(); renderPanel(); }
-  let s = Math.max(0, Math.floor((CLOSE - Date.now()) / 1000));
-  const d = Math.floor(s / 86400); s %= 86400; const h = Math.floor(s / 3600); s %= 3600; const m = Math.floor(s / 60); s %= 60;
-  const two = n => String(n).padStart(2, "0");
-  $("#cdD").textContent = d; $("#cdH").textContent = two(h); $("#cdM").textContent = two(m); $("#cdS").textContent = two(s);
 }
 
 /* ---------- when Kalshi's odds were last updated (the note under the table) ----------
@@ -605,7 +610,7 @@ const KX_TIME = new Date(window.KALSHI_UPDATED || NaN);
 const ago = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 function kalshiAge(){
   const out = $("#kxAge");
-  if (isNaN(KX_TIME)) { out.textContent = ""; return; }
+  if (!open || isNaN(KX_TIME)) { out.textContent = ""; return; }
   const min = Math.max(0, Math.round((Date.now() - KX_TIME) / 60000));
   const when = min < 1 ? "just now" : min < 60 ? ago.format(-min, "minute")
     : min < 1440 ? ago.format(-Math.round(min / 60), "hour") : ago.format(-Math.round(min / 1440), "day");
